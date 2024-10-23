@@ -26,5 +26,3 @@ def get_weather(city):
     result = f"Current weather in {parsed_data['city']} is {parsed_data['weather'].lower()} with a temperature of {int(parsed_data['temperature'])}°F."
 
     return result
-
-print(get_weather('New York'))
