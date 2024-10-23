@@ -17,12 +17,14 @@ def get_weather(city):
     # Parse the data for wanted information
     parsed_data = {
         'city': city,
-        #'weather': data['weather'][0]['main'],
+        'weather': data['weather'][0]['main'],
         'temperature': data['main']['temp'],
-        'description': data['weather'][0]['description']
+        #'description': data['weather'][0]['description'],
     }
 
     # Format the wanted information to human readable format
-    result = f"Current weather in {parsed_data['city']} is {parsed_data['description']} with a temperature of {parsed_data['temperature']}F."
+    result = f"Current weather in {parsed_data['city']} is {parsed_data['weather'].lower()} with a temperature of {int(parsed_data['temperature'])}°F."
 
     return result
+
+print(get_weather('New York'))
