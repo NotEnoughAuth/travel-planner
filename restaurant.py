@@ -45,5 +45,7 @@ def get_restaurants(city):
         print(f"{a}, {b}, {c}, {d}")
 
 if __name__ == "__main__":
-    get_restaurants("Menomonie, WI")
+#This is for testing; please do not commit anything to this section.
+    exit(0)
+
     
