@@ -1,6 +1,9 @@
 import csv
 import random
 from weatherApi import get_weather
+from attractions import get_nearby_places
+from restaurant import get_restaurants
+from module1 import Hotel_Api
 
 
 def yesnoinput(prompt):
@@ -42,16 +45,35 @@ if yn == True:
     if yesnoinput("Are you sure, I herd its warmer in Austin Texas: "):
         print("Fine we will go to " + legallyDistinctInput)
     else:
-        new_loc = "Austin, Texas"
-        print("Glad you came to your senses, we will be going to " + new_loc)
+        city = "Austin, Texas"
+        print("Glad you came to your senses, we will be going to " + city)
 else:
     print("\nPicking random place to go to...")
     print(randomPlace())
-    new_loc = randomPlace()
+    city = randomPlace()
 
 print("\n\n\n\n")
 
+loc = input("Please enter the latitude and longitude of the location you want to travel to: ")
 
 print("=============================================================================")
 
-get_weather(new_loc)
+print("Getting the weather for " + city)
+print(get_weather(city))
+
+print("=============================================================================")
+print("Getting nearby parks in " + city)
+print(get_nearby_places(loc, 1500, 'park'))
+
+print("=============================================================================")
+print("Getting nearby restaurants in " + city)
+print(get_restaurants(city))
+
+print("=============================================================================")
+print("Hotel Planning Page")
+cityCode = input("Please enter the IANA city code of the location you want to travel to: ")
+checkInDate = input("Please enter the check-in date (YYYY-MM-DD): ")
+checkOutDate = input("Please enter the check-out date (YYYY-MM-DD): ")
+adults = input("Please enter the number of adults: ")
+
+print(Hotel_Api(cityCode, checkInDate, checkOutDate, adults))
