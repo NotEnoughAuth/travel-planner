@@ -98,5 +98,7 @@ if __name__ == "__main__":
     checkInDate = input("Please enter the check-in date (YYYY-MM-DD): ")
     checkOutDate = input("Please enter the check-out date (YYYY-MM-DD): ")
     adults = input("Please enter the number of adults: ")
-
-    print(Hotel_Api(cityCode, checkInDate, checkOutDate, adults))
+    hotels = Hotel_Api(cityCode, checkInDate, checkOutDate, adults)
+    if hotels:
+        for hotel in hotels:
+            print(f"Hotel: {hotel['name']}, Price: {hotel['price']}")
