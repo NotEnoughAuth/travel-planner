@@ -94,11 +94,12 @@ if __name__ == "__main__":
     print("=============================================================================")
     print("\n")
     print("Hotel Planning Page")
-    cityCode = input("Please enter the IANA city code of the location you want to travel to: ")
     checkInDate = input("Please enter the check-in date (YYYY-MM-DD): ")
     checkOutDate = input("Please enter the check-out date (YYYY-MM-DD): ")
     adults = input("Please enter the number of adults: ")
-    hotels = Hotel_Api(cityCode, checkInDate, checkOutDate, adults)
+    hotels = Hotel_Api(loc.split(',')[0], loc.split(',')[1], checkInDate, checkOutDate, adults)
     if hotels:
         for hotel in hotels:
-            print(f"Hotel: {hotel['name']}, Price: {hotel['price']}")
+            print("\t" + f"Hotel: {hotel['title']}, Price: {hotel['priceForDisplay']}/night")
+    print("\n")
+    print("=============================================================================")
