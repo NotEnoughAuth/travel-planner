@@ -1,7 +1,5 @@
 import requests
-import os
 import json
-from pprint import pprint
 
 '''This function get the information of nearby restaurants.'''
 def get_restaurants(city):
