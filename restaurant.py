@@ -40,12 +40,12 @@ def get_restaurants(city):
         number = business['display_phone']
         numbers.append(number)
 
-    print("Here are some restaurants in your area that you might be interested in:")
-    for a, b, c, d in zip(business_names, locations, price_ranges, numbers):
-        print(f"{a}, {b}, {c}, {d}")
+    return business_names, locations, price_ranges, numbers
+    
 
 if __name__ == "__main__":
-#This is for testing; please do not commit anything to this section.
-    exit(0)
-
-    
+    #This is how this function should be implemented in the main function
+    restaurants, r_location, r_price, r_phone =  get_restaurants("New York City")
+    print("Here are some local restaurants you may be interested in:")
+    for a, b, c, d in zip(restaurants, r_location, r_price, r_phone):
+        print(f"{a}, {b}, {c}, {d}")
