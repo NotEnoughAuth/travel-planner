@@ -6,7 +6,8 @@ def get_restaurants(city):
     business_names = []
     locations = []
     numbers = []
-    price_ranges = []
+    ratings = []
+    
     # Load the Yelp API key
     with open('apikeys.json') as f:
         api_data = json.load(f)
@@ -22,24 +23,28 @@ def get_restaurants(city):
     #Process request
     response = requests.get(url, headers=headers)
     data = response.json()
+    
     #Work with parsed data to create lists
     for business in data['businesses']:
         #Business names
         name = business['name']
         business_names.append(name)
+        
         #Locations
         location_json = business['location']['display_address']
         location = ', '.join(location_json)
         locations.append(location)
+        
         #Rating
-        price = business['rating']
-        price_ranges.append(price)
+        rating = business['rating']
+        ratings.append(rating)
+        
         #Phone number
         number = business['display_phone']
         numbers.append(number)
 
-    return business_names, locations, price_ranges, numbers
-    
+    return business_names, locations, ratings, numbers
+
 
 if __name__ == "__main__":
     #This is how this function should be implemented in the main function
