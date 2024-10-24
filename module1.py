@@ -35,8 +35,9 @@ def Hotel_Api(location, check_in_date, check_out_date, guests):
         print(f"Error: {e}")
         return None
 
-# Example usage:
-hotels = Hotel_Api("NYC", "2024-11-01", "2024-11-05", 2)
-if hotels:
-    for hotel in hotels:
-        print(f"Hotel: {hotel['name']}, Price: {hotel['price']}")
+if __name__ == "__main__":
+    # Example usage:
+    hotels = Hotel_Api("NYC", "2024-11-01", "2024-11-05", 2)
+    if hotels:
+        for hotel in hotels:
+            print(f"Hotel: {hotel['name']}, Price: {hotel['price']}")

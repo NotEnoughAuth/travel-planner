@@ -1,12 +1,12 @@
 import requests
 import json
 
-with open('apikeys.json','r') as file:
-    config = json.load(file)
-    api_key = config['GoogleAPI']
-
-def get_nearby_places( api_key,location, radius, place_type):
+def get_nearby_places(location, radius, place_type):
     
+    with open('apikeys.json','r') as file:
+        config = json.load(file)
+        api_key = config['GoogleAPI']
+
     url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
     
 
@@ -37,7 +37,7 @@ def main():
     place_type = 'park'  # Type of place to search for
 
     # Call the function to get nearby places
-    places = get_nearby_places(api_key, location, radius, place_type)
+    places = get_nearby_places(location, radius, place_type)
 
     if places:
         # Print out the name of each place
