@@ -28,52 +28,75 @@ def randomPlace():
     random_number = random.randint(0, len(places))
 
     randomPlace = places[random_number]
+    
+    formattedLat = "{:.6f}".format(float(randomPlace[3]))
+    formattedLong = "{:.6f}".format(float(randomPlace[4]))
+
+    outputjson = {
+        "city": randomPlace[0],
+        "latlong": formattedLat + "," + formattedLong,
+        "state": randomPlace[1],
+    }
+
+    return outputjson
 
 
-    return randomPlace[0] + ", " + randomPlace[1]
+if __name__ == "__main__":
+    print("=============================================================================")
+    print("Hello fellow Traveler!")
+    legallyDistinctInput = input("Please type out a location that you want to travel to:\n\nLocation: ")
 
 
-print("=============================================================================")
-print("Hello fellow Traveler!")
-legallyDistinctInput = input("Please type out a location that you want to travel to:\n\nLocation: ")
+    print("\n\n\n\n")
+    yn = yesnoinput("Are you really sure you want to travel to: " + legallyDistinctInput)
 
-
-print("\n\n\n\n")
-yn = yesnoinput("Are you really sure you want to travel to: " + legallyDistinctInput)
-
-if yn == True:
-    if yesnoinput("Are you sure, I herd its warmer in Austin Texas: "):
-        print("Fine we will go to " + legallyDistinctInput)
+    if yn == True:
+        if yesnoinput("Are you sure, I herd its warmer in Austin Texas: "):
+            print("Fine we will go to " + legallyDistinctInput)
+            loc = input("Please enter the latitude and longitude of " + legallyDistinctInput)
+            city = legallyDistinctInput
+        else:
+            city = "Austin"
+            print("Glad you came to your senses, we will be going to " + city)
+            loc = input("Please enter the latitude and longitude of " + city)
     else:
-        city = "Austin, Texas"
-        print("Glad you came to your senses, we will be going to " + city)
-else:
-    print("\nPicking random place to go to...")
-    print(randomPlace())
-    city = randomPlace()
+        print("\nPicking random place to go to...")
+        randomCity = randomPlace()
+        city = randomCity["city"]
+        loc = randomCity["latlong"]
+        print("We will be going to " + city + ", " + randomCity["state"])
+    
+    print("\n\n")
 
-print("\n\n\n\n")
+    print("=============================================================================")
+    print("\n")
+    print("Getting the weather for " + city)
+    print("\t" + get_weather(city))
+    print("\n")
+    print("=============================================================================")
+    print("\n")
+    print("Getting nearby parks in " + city)
+    parks = get_nearby_places(loc, 1500, 'park')
+    if parks:
+        for park in parks:
+            print("\t" + park['name'])
+    else:
+        print("\t" + "No parks found")
+    print("\n")
+    print("=============================================================================")
+    print("\n")
+    print("Getting nearby restaurants in " + city)
+    resturants = get_restaurants(city)
 
-loc = input("Please enter the latitude and longitude of the location you want to travel to: ")
+    for restaurant in resturants[0]:
+        print("\t" + restaurant)
+    print("\n")
+    print("=============================================================================")
+    print("\n")
+    print("Hotel Planning Page")
+    cityCode = input("Please enter the IANA city code of the location you want to travel to: ")
+    checkInDate = input("Please enter the check-in date (YYYY-MM-DD): ")
+    checkOutDate = input("Please enter the check-out date (YYYY-MM-DD): ")
+    adults = input("Please enter the number of adults: ")
 
-print("=============================================================================")
-
-print("Getting the weather for " + city)
-print(get_weather(city))
-
-print("=============================================================================")
-print("Getting nearby parks in " + city)
-print(get_nearby_places(loc, 1500, 'park'))
-
-print("=============================================================================")
-print("Getting nearby restaurants in " + city)
-print(get_restaurants(city))
-
-print("=============================================================================")
-print("Hotel Planning Page")
-cityCode = input("Please enter the IANA city code of the location you want to travel to: ")
-checkInDate = input("Please enter the check-in date (YYYY-MM-DD): ")
-checkOutDate = input("Please enter the check-out date (YYYY-MM-DD): ")
-adults = input("Please enter the number of adults: ")
-
-print(Hotel_Api(cityCode, checkInDate, checkOutDate, adults))
+    print(Hotel_Api(cityCode, checkInDate, checkOutDate, adults))
