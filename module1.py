@@ -24,8 +24,6 @@ def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
     headers = {
         "x-rapidapi-key": api_key,
     }
-
-    print(params)
     
     try:
         # Send the request to the API
@@ -34,7 +32,7 @@ def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
         
         # Parse and return the hotel data
         hotel_data = response.json()
-        print(hotel_data["data"]["data"])
+        # print(hotel_data)
         return hotel_data["data"]["data"]  # Assuming the API response contains a 'data' key with the results
     except requests.exceptions.RequestException as e:
         # Handle errors or failures

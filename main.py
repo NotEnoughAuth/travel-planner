@@ -100,4 +100,6 @@ if __name__ == "__main__":
     hotels = Hotel_Api(loc.split(',')[0], loc.split(',')[1], checkInDate, checkOutDate, adults)
     if hotels:
         for hotel in hotels:
-            print(f"Hotel: {hotel['title']}, Price: {hotel['priceForDisplay']}/night")
+            print("\t" + f"Hotel: {hotel['title']}, Price: {hotel['priceForDisplay']}/night")
+    print("\n")
+    print("=============================================================================")
