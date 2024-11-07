@@ -133,9 +133,15 @@ Resources:
     Properties:
       InstanceType: t2.micro
       ImageId: ami-04692212255e789db
-      SecurityGroups:
-        - !Ref MySecurityGroup
       SubnetId: !Ref MyPublicSubnet1
       Tags:
         - Key: Name
           Value: my-app-ec2-instance
+      UserData: !Base64
+        Fn::Sub: |
+          #!/bin/bash
+          echo ECS_CLUSTER=${MyAppECSCluster} >> /etc/ecs/ecs.config
+          yum install -y aws-cli
+          yum install -y ecs-init
+          systemctl enable --now docker
+          systemctl enable --now ecs
