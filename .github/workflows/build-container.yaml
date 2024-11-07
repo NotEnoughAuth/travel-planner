@@ -29,15 +29,20 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }} # GitHub automatically provides this secret for authentication
 
+    # Downcase the repository name
+    - name: downcase REPO
+      run: |
+        echo "REPO=${GITHUB_REPOSITORY@L}" >>${GITHUB_ENV}
+  
     # Build the Docker image
     - name: Build Docker image
       run: |
-        docker build -t ghcr.io/${{ github.repository | toLowerCase}}:latest .
+        docker build -t ghcr.io/${REPO}:latest .
 
     # Push the Docker image to GHCR
     - name: Push Docker image to GHCR
       run: |
-        docker push ghcr.io/${{ github.repository | toLowerCase }}:latest
+        docker push ghcr.io/${REPO}:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -60,7 +65,7 @@ jobs:
             --template-file cloudformation-template.yml \
             --stack-name $STACK_NAME \
             --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides ImageUrl=ghcr.io/${{ github.repository }}:${{ github.sha }}
+            --parameter-overrides ImageUrl=ghcr.io/${REPO}:${{ github.sha }}
 
           # Wait for ECS service to be updated
           aws ecs update-service \
