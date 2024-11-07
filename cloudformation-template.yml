@@ -17,7 +17,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: travel-planner-task
-      ExecutionRoleArn: arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS
+      # ExecutionRoleArn: arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS
       ContainerDefinitions:
         - Name: travel-planner-container
           Image: !Sub "ghcr.io/notenoughauth/travel-planner:latest"
