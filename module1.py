@@ -1,10 +1,7 @@
 import requests
-from dotenv import load_dotenv
-import os
 import json
 
-# Load environment variables from .env file
-load_dotenv()
+
 
 # Get the API key from environment variables
 with open('apikeys.json','r') as file:
