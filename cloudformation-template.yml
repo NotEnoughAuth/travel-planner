@@ -66,7 +66,7 @@ Resources:
   MyAppALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: !Sub "my-app-alb-${AWS::AccountId[0:6]}"
+      Name: !Sub "mmy-app-alb-225429"
       Subnets:
         - Ref: MyPublicSubnet1
         - Ref: MyPublicSubnet2
