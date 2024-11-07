@@ -125,5 +125,17 @@ Resources:
       LoadBalancers:
         - ContainerName: travel-planner-container
           ContainerPort: 80
-          TargetGroupArn: !Ref MyAppTargetGroup
           LoadBalancerName: !Ref MyAppALB  # Load Balancer Name
+
+  # Define EC2 Instance to join the ECS Cluster
+  MyAppEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ecs
+      SecurityGroups:
+        - !Ref MySecurityGroup
+      SubnetId: !Ref MyPublicSubnet1
+      Tags:
+        - Key: Name
+          Value: my-app-ec2-instance
