@@ -1,20 +1,20 @@
-import requests # type: ignore
-import json
+import requests
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Get the API key from environment variables
+api_key = os.getenv('TRIPADVISOR_API_KEY')
 
 def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
-    with open('apikeys.json') as f:
-        api_data = json.load(f)
-        api_key = api_data['tripAdvisorAPI']
-
     # API base URL for Amadeus Hotel Search
-    base_url = "https://tripadvisor16.p.rapidapi.com//api/v1/hotels/searchHotelsByLocation"
-    
- 
-    
+    base_url = "https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotelsByLocation"
+
     # Parameters to pass in the API request
     params = {
-        "latitude": lat, # latitude and longitude of the location
+        "latitude": lat,
         "longitude": long,
         "checkIn": check_in_date,
         "checkOut": check_out_date,
@@ -24,15 +24,14 @@ def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
     headers = {
         "x-rapidapi-key": api_key,
     }
-    
+
     try:
         # Send the request to the API
         response = requests.get(base_url, params=params, headers=headers)
         response.raise_for_status()  # Raise an exception for HTTP errors
-        
+
         # Parse and return the hotel data
         hotel_data = response.json()
-        # print(hotel_data)
         return hotel_data["data"]["data"]  # Assuming the API response contains a 'data' key with the results
     except requests.exceptions.RequestException as e:
         # Handle errors or failures
