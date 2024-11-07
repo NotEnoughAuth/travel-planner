@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  # Define an ECR Repository
+  MyAppECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: travel-planner-repo
+
+  # Define an ECS Cluster
+  MyAppECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: travel-planner
+
+  # Define the ECS Task Definition
+  MyAppTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: travel-planner-task
+      ExecutionRoleArn: arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole
+      ContainerDefinitions:
+        - Name: travel-planner-container
+          Image: !Sub "ghcr.io/NotEnoughAuth/travel-planner:latest"
+          Memory: 512
+          Cpu: 256
+          Essential: true
+
+  # Define the ECS Service
+  MyAppService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref MyAppECSCluster
+      TaskDefinition: !Ref MyAppTaskDefinition
+      DesiredCount: 1
+      LaunchType: EC2
+      LoadBalancers:
+        - ContainerName: travel-planner-container
+          ContainerPort: 80
+          TargetGroupArn: arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:targetgroup/travel-planner-target-group/1234567890abcdef
