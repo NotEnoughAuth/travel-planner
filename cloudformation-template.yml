@@ -60,7 +60,6 @@ Resources:
         - Ref: MyPublicSubnet
       SecurityGroups:
         - !Ref MySecurityGroup
-      LoadBalancerType: application
       Scheme: internet-facing
 
   # 7. Create the Target Group
