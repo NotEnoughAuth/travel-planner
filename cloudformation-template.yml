@@ -12,12 +12,23 @@ Resources:
           Value: my-app-vpc
 
   # 2. Create a Public Subnet
-  MyPublicSubnet:
+  MyPublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC
       CidrBlock: "10.0.1.0/24"
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: my-app-public-subnet
+  
+  MyPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "10.0.2.0/24"
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -57,7 +68,8 @@ Resources:
     Properties:
       Name: my-app-alb
       Subnets:
-        - Ref: MyPublicSubnet
+        - Ref: MyPublicSubnet1
+        - Ref: MyPublicSubnet2
       SecurityGroups:
         - !Ref MySecurityGroup
       Scheme: internet-facing
