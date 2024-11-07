@@ -1,17 +1,82 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
-  # ecsServiceRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     AssumeRolePolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Effect: Allow
-  #           Principal:
-  #             Service: ecs.amazonaws.com
-  #           Action: sts:AssumeRole
-  #     ManagedPolicyArns:
-  #       - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole
+# 1. Create VPC
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "10.0.0.0/16"
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: my-app-vpc
+
+  # 2. Create a Public Subnet
+  MyPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "10.0.1.0/24"
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: my-app-public-subnet
+
+  # 3. Create an Internet Gateway
+  MyInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: my-app-igw
+
+  # Attach the Internet Gateway to the VPC
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref MyInternetGateway
+
+  # 4. Create a Security Group for ECS instances (allow HTTP)
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP traffic to the ECS instances
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: "80"
+          ToPort: "80"
+          CidrIp: "0.0.0.0/0"  # Allow HTTP from anywhere
+
+
+  # 6. Create the Application Load Balancer
+  MyAppALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: my-app-alb
+      Subnets:
+        - Ref: MyPublicSubnet
+      SecurityGroups:
+        - !Ref MySecurityGroup
+      LoadBalancerType: application
+      Scheme: internet-facing
+
+  # 7. Create the Target Group
+  MyAppTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: my-app-target-group
+      Port: 80
+      Protocol: HTTP
+      VpcId: !Ref MyVPC
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: "/"
+      HealthCheckPort: traffic-port
+      HealthCheckProtocol: HTTP
+      Matcher:
+        HttpCode: "200"
 
   # Define an ECR Repository
   MyAppECRRepository:
@@ -49,4 +114,5 @@ Resources:
       LoadBalancers:
         - ContainerName: travel-planner-container
           ContainerPort: 80
-          # TargetGroupArn: arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:targetgroup/travel-planner-target-group/1234567890abcdef
+          TargetGroupArn: !Ref MyAppTargetGroup
+          LoadBalancerName: !Ref MyAppALB  # Load Balancer Name
