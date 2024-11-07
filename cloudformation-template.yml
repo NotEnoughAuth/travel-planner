@@ -20,7 +20,7 @@ Resources:
       ExecutionRoleArn: arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole
       ContainerDefinitions:
         - Name: travel-planner-container
-          Image: !Sub "ghcr.io/NotEnoughAuth/travel-planner:latest"
+          Image: !Sub "ghcr.io/notenoughauth/travel-planner:latest"
           Memory: 512
           Cpu: 256
           Essential: true
