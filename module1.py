@@ -1,13 +1,16 @@
 import requests
 from dotenv import load_dotenv
 import os
+import json
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Get the API key from environment variables
-api_key = os.getenv('TRIPADVISOR_API_KEY')
-
+with open('apikeys.json','r') as file:
+        config = json.load(file)
+        api_key = config['TRIPADVISOR_API_KEY']
+        
 def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
     # API base URL for Amadeus Hotel Search
     base_url = "https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotelsByLocation"
