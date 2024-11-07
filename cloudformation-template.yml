@@ -1,5 +1,18 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
+  # ecsServiceRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             Service: ecs.amazonaws.com
+  #           Action: sts:AssumeRole
+  #     ManagedPolicyArns:
+  #       - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole
+
   # Define an ECR Repository
   MyAppECRRepository:
     Type: AWS::ECR::Repository
@@ -17,6 +30,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: travel-planner-task
+      # ExecutionRoleArn: arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS
       ContainerDefinitions:
         - Name: travel-planner-container
           Image: !Sub "ghcr.io/notenoughauth/travel-planner:latest"
@@ -35,4 +49,4 @@ Resources:
       LoadBalancers:
         - ContainerName: travel-planner-container
           ContainerPort: 80
-          TargetGroupArn: arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:targetgroup/travel-planner-target-group/1234567890abcdef
+          # TargetGroupArn: arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:targetgroup/travel-planner-target-group/1234567890abcdef
