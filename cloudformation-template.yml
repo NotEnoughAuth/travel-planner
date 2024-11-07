@@ -114,18 +114,18 @@ Resources:
           Cpu: 256
           Essential: true
 
-  # Define the ECS Service
-  MyAppService:
-    Type: AWS::ECS::Service
-    Properties:
-      Cluster: !Ref MyAppECSCluster
-      TaskDefinition: !Ref MyAppTaskDefinition
-      DesiredCount: 1
-      LaunchType: EC2
-      LoadBalancers:
-        - ContainerName: travel-planner-container
-          ContainerPort: 80
-          LoadBalancerName: !Ref MyAppALB  # Load Balancer Name
+  # # Define the ECS Service
+  # MyAppService:
+  #   Type: AWS::ECS::Service
+  #   Properties:
+  #     Cluster: !Ref MyAppECSCluster
+  #     TaskDefinition: !Ref MyAppTaskDefinition
+  #     DesiredCount: 1
+  #     LaunchType: EC2
+  #     LoadBalancers:
+  #       - ContainerName: travel-planner-container
+  #         ContainerPort: 80
+  #         LoadBalancerName: !Ref MyAppALB  # Load Balancer Name
 
   # Define EC2 Instance to join the ECS Cluster
   MyAppEC2:
