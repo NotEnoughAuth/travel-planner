@@ -49,6 +49,10 @@ Resources:
           FromPort: "80"
           ToPort: "80"
           CidrIp: "0.0.0.0/0"  # Allow HTTP from anywhere
+        - IpProtocol: tcp
+          FromPort: "22"
+          ToPort: "22"
+          CidrIp: "0.0.0.0/0"  # Allow SSH from anywhere
   
   # 5. Add a route table and route to the Internet Gateway
   MyRouteTable:
