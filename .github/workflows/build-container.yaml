@@ -73,6 +73,10 @@ jobs:
             --stack-name $STACK_NAME \
             --capabilities CAPABILITY_NAMED_IAM
 
+      - name: Make the .ssh directory
+        run: |
+          mkdir -p ~/.ssh
+
       - name: Copy ssh key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/GitHubKeyPair.pem
