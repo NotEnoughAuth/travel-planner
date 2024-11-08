@@ -73,6 +73,13 @@ Resources:
       DestinationCidrBlock: "0.0.0.0/0"
       GatewayId: !Ref MyInternetGateway
 
+  # Associate the route table with the public subnet
+  MySubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MyPublicSubnet1
+      RouteTableId: !Ref MyRouteTable
+
   # Define EC2 Instance
   MyAppEC2:
     Type: AWS::EC2::Instance
