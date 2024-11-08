@@ -42,6 +42,7 @@ Resources:
   MySecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      GroupName: travel-planner-sg
       GroupDescription: Allow HTTP traffic to the ECS instances
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
