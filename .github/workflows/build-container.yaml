@@ -96,6 +96,6 @@ jobs:
       - name: run container
         run: |
           # ssh into the EC2 instance and do a docker run for the new image and query the cli for the ip of the ec2 instance that has been created
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/GitHubKeyPair.pem ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text) "docker run -d -p 80:80 ghcr.io/${REPO}:latest --pull=always"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/GitHubKeyPair.pem ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text) "sudo docker run -d -p 80:80 ghcr.io/${REPO}:latest --pull=always"
           # output the public ip of the ec2 instance
           echo "The public IP of the EC2 instance is $(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)"
