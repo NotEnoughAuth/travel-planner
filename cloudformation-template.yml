@@ -82,6 +82,8 @@ Resources:
       Tags:
         - Key: Name
           Value: my-app-ec2-instance
+      SecurityGroupIds: 
+        - !Ref MySecurityGroup
       KeyName: GitHubKeyPair
       UserData: !Base64
         Fn::Sub: |
