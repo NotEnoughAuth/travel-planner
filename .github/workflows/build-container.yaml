@@ -81,6 +81,7 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/GitHubKeyPair.pem
           chmod 700 ~/.ssh/GitHubKeyPair.pem
+          ls -al ~/.ssh
       
       - name: Wait for EC2 instance to be ready
         run: |
