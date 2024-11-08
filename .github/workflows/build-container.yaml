@@ -80,7 +80,7 @@ jobs:
       - name: Copy ssh key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/GitHubKeyPair.pem
-          chmod 600 ~/.ssh/GitHubKeyPair.pem
+          chmod 700 ~/.ssh/GitHubKeyPair.pem
       
       - name: Wait for EC2 instance to be ready
         run: |
