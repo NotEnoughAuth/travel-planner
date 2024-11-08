@@ -1,39 +1,101 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
-  # Define an ECR Repository
-  MyAppECRRepository:
-    Type: AWS::ECR::Repository
+# 1. Create VPC
+  MyVPC:
+    Type: AWS::EC2::VPC
     Properties:
-      RepositoryName: travel-planner-repo
+      CidrBlock: "10.0.0.0/16"
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: my-app-vpc
 
-  # Define an ECS Cluster
-  MyAppECSCluster:
-    Type: AWS::ECS::Cluster
+  # 2. Create a Public Subnet
+  MyPublicSubnet1:
+    Type: AWS::EC2::Subnet
     Properties:
-      ClusterName: travel-planner
+      VpcId: !Ref MyVPC
+      CidrBlock: "10.0.1.0/24"
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: my-app-public-subnet
 
-  # Define the ECS Task Definition
-  MyAppTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
+  # 3. Create an Internet Gateway
+  MyInternetGateway:
+    Type: AWS::EC2::InternetGateway
     Properties:
-      Family: travel-planner-task
-      ExecutionRoleArn: arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole
-      ContainerDefinitions:
-        - Name: travel-planner-container
-          Image: !Sub "ghcr.io/NotEnoughAuth/travel-planner:latest"
-          Memory: 512
-          Cpu: 256
-          Essential: true
+      Tags:
+        - Key: Name
+          Value: my-app-igw
 
-  # Define the ECS Service
-  MyAppService:
-    Type: AWS::ECS::Service
+  # Attach the Internet Gateway to the VPC
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      Cluster: !Ref MyAppECSCluster
-      TaskDefinition: !Ref MyAppTaskDefinition
-      DesiredCount: 1
-      LaunchType: EC2
-      LoadBalancers:
-        - ContainerName: travel-planner-container
-          ContainerPort: 80
-          TargetGroupArn: arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:targetgroup/travel-planner-target-group/1234567890abcdef
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref MyInternetGateway
+
+  # 4. Create a Security Group for ECS instances (allow HTTP)
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: travel-planner-sg
+      GroupDescription: Allow HTTP traffic to the ECS instances
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: "80"
+          ToPort: "80"
+          CidrIp: "0.0.0.0/0"  # Allow HTTP from anywhere
+        - IpProtocol: tcp
+          FromPort: "22"
+          ToPort: "22"
+          CidrIp: "0.0.0.0/0"  # Allow SSH from anywhere
+  
+  # 5. Add a route table and route to the Internet Gateway
+  MyRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: my-app-public-route-table
+
+  # Add a route to the route table
+  MyRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachInternetGateway
+    Properties:
+      RouteTableId: !Ref MyRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref MyInternetGateway
+
+  # Associate the route table with the public subnet
+  MySubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MyPublicSubnet1
+      RouteTableId: !Ref MyRouteTable
+
+  # Define EC2 Instance
+  MyAppEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-063d43db0594b521b
+      SubnetId: !Ref MyPublicSubnet1
+      Tags:
+        - Key: Name
+          Value: my-app-ec2-instance
+      SecurityGroupIds: 
+        - !Ref MySecurityGroup
+      KeyName: GitHubKeyPair
+      UserData: !Base64
+        Fn::Sub: |
+          #!/bin/bash
+          yum update -y
+          yum install docker -y
+          systemctl enable --now docker
