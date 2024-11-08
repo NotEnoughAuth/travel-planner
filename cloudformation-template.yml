@@ -22,17 +22,6 @@ Resources:
       Tags:
         - Key: Name
           Value: my-app-public-subnet
-  
-  MyPublicSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: "10.0.2.0/24"
-      AvailabilityZone: !Select [ 1, !GetAZs '' ]
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: my-app-public-subnet
 
   # 3. Create an Internet Gateway
   MyInternetGateway:
@@ -60,88 +49,38 @@ Resources:
           FromPort: "80"
           ToPort: "80"
           CidrIp: "0.0.0.0/0"  # Allow HTTP from anywhere
-
-
-  # 6. Create the Application Load Balancer
-  MyAppALB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  
+  # 5. Add a route table and route to the Internet Gateway
+  MyRouteTable:
+    Type: AWS::EC2::RouteTable
     Properties:
-      Name: !Sub "mmy-app-alb-225429"
-      Subnets:
-        - Ref: MyPublicSubnet1
-        - Ref: MyPublicSubnet2
-      SecurityGroups:
-        - !Ref MySecurityGroup
-      Scheme: internet-facing
-
-  # 7. Create the Target Group
-  MyAppTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: my-app-target-group
-      Port: 80
-      Protocol: HTTP
       VpcId: !Ref MyVPC
-      HealthCheckIntervalSeconds: 30
-      HealthCheckPath: "/"
-      HealthCheckPort: traffic-port
-      HealthCheckProtocol: HTTP
-      Matcher:
-        HttpCode: "200"
+      Tags:
+        - Key: Name
+          Value: my-app-public-route-table
 
-  # Define an ECR Repository
-  MyAppECRRepository:
-    Type: AWS::ECR::Repository
+  # Add a route to the route table
+  MyRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachInternetGateway
     Properties:
-      RepositoryName: travel-planner-repo
+      RouteTableId: !Ref MyRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref MyInternetGateway
 
-  # Define an ECS Cluster
-  MyAppECSCluster:
-    Type: AWS::ECS::Cluster
-    Properties:
-      ClusterName: travel-planner
-
-  # Define the ECS Task Definition
-  MyAppTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Family: travel-planner-task
-      # ExecutionRoleArn: arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS
-      ContainerDefinitions:
-        - Name: travel-planner-container
-          Image: !Sub "ghcr.io/notenoughauth/travel-planner:latest"
-          Memory: 512
-          Cpu: 256
-          Essential: true
-
-  # # Define the ECS Service
-  # MyAppService:
-  #   Type: AWS::ECS::Service
-  #   Properties:
-  #     Cluster: !Ref MyAppECSCluster
-  #     TaskDefinition: !Ref MyAppTaskDefinition
-  #     DesiredCount: 1
-  #     LaunchType: EC2
-  #     LoadBalancers:
-  #       - ContainerName: travel-planner-container
-  #         ContainerPort: 80
-  #         LoadBalancerName: !Ref MyAppALB  # Load Balancer Name
-
-  # Define EC2 Instance to join the ECS Cluster
+  # Define EC2 Instance
   MyAppEC2:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-04692212255e789db
+      ImageId: ami-063d43db0594b521b
       SubnetId: !Ref MyPublicSubnet1
       Tags:
         - Key: Name
           Value: my-app-ec2-instance
+      KeyName: GitHubKeyPair
       UserData: !Base64
         Fn::Sub: |
           #!/bin/bash
-          echo ECS_CLUSTER=${MyAppECSCluster} >> /etc/ecs/ecs.config
-          yum install -y aws-cli
-          yum install -y ecs-init
+          yum install docker -y
           systemctl enable --now docker
-          systemctl enable --now ecs

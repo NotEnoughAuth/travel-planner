@@ -32,7 +32,7 @@ def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
         
         # Parse and return the hotel data
         hotel_data = response.json()
-        # print(hotel_data)
+        print(hotel_data)
         return hotel_data["data"]["data"]  # Assuming the API response contains a 'data' key with the results
     except requests.exceptions.RequestException as e:
         # Handle errors or failures
@@ -41,7 +41,7 @@ def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
 
 if __name__ == "__main__":
     # Example usage:
-    hotels = Hotel_Api("33.954737", "-118.212016", "2024-11-01", "2024-11-05", 2)
+    hotels = Hotel_Api("33.954737", "-118.212016", "2024-12-01", "2024-12-05", 2)
     if hotels:
         for hotel in hotels:
             print(f"Hotel: {hotel['title']}, Price: {hotel['priceForDisplay']}")
