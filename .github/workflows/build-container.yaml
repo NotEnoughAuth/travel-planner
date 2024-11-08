@@ -77,6 +77,11 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > GitHubKeyPair.pem
           chmod 600 GitHubKeyPair.pem
+      
+      - name: Wait for EC2 instance to be ready
+        run: |
+          # Wait for the EC2 instance to be ready
+          aws ec2 wait instance-status-ok --instance-ids $(aws ec2 describe-instances --query 'Reservations[*].Instances[*].InstanceId' --output text)
 
       - name: run container
         run: |
