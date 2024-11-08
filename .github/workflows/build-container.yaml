@@ -82,6 +82,11 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/GitHubKeyPair.pem
           chmod 700 ~/.ssh/GitHubKeyPair.pem
           ls -al ~/.ssh
+
+      # Downcase the repository name
+      - name: downcase REPO
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY@L}" >>${GITHUB_ENV}
       
       - name: Wait for EC2 instance to be ready
         run: |
