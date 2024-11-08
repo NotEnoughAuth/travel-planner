@@ -77,10 +77,10 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > GitHubKeyPair.pem
           chmod 600 GitHubKeyPair.pem
-          
+
       - name: run container
         run: |
           # ssh into the EC2 instance and do a docker run for the new image and query the cli for the ip of the ec2 instance that has been created
-          ssh -i GitHubKeyPair.pem ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text) "docker run -d -p 80:80 ghcr.io/${REPO}:${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no -i GitHubKeyPair.pem ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text) "docker run -d -p 80:80 ghcr.io/${REPO}:${{ github.sha }}"
           # output the public ip of the ec2 instance
           echo "The public IP of the EC2 instance is $(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)"
