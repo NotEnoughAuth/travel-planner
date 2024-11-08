@@ -7,5 +7,4 @@
 # CMD python3 /home/myapp/sample_app.py
 
 # website::tag::1:: Build a simple Docker image that contains a text file with the contents "Hello, World!"
-FROM ubuntu:18.04
-RUN echo 'Hello, World!' > /test.txt
+FROM nginx:alpine
