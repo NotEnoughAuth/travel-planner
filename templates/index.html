@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Location Form</title>
+   <style>
+      body {
+         font-family: Arial, sans-serif;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         height: 100vh;
+         background-color: #242424;
+         color: #f0f0f0;
+         margin: 0;
+      }
+      .container {
+         background: #333;
+         padding: 20px;
+         border-radius: 8px;
+         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+         text-align: center;
+         width: 300px;
+      }
+      h1 {
+         font-size: 24px;
+         margin-bottom: 20px;
+      }
+      form {
+         display: flex;
+         flex-direction: column;
+      }
+      label {
+         margin-bottom: 5px;
+         font-weight: bold;
+      }
+      input {
+         margin-bottom: 15px;
+         padding: 10px;
+         border: 1px solid #555;
+         border-radius: 4px;
+         background-color: #444;
+         color: #f0f0f0;
+      }
+      button {
+         padding: 10px;
+         background-color: #007BFF;
+         color: white;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;
+      }
+      button:hover {
+         background-color: #0056b3;
+      }
+      .header-gif {
+         width: 100%;
+         height: auto;
+         margin-bottom: 20px;
+      }
+   </style>
+</head>
+<body>
+   <div class="container">
+      <img src="/static/travel-planner.gif" alt="Header Gif" class="header-gif">
+      <h1>Enter Location</h1>
+      <form method="POST" action="/">
+         <label for="location">Location:</label>
+         <input type="text" id="location" name="location" required>
+         <label for="trip_start">Start Date:</label>
+         <input type="date" id="trip_start" name="trip_start">
+         <label for="trip_end">End Date:</label>
+         <input type="date" id="trip_end" name="trip_end">
+         <button type="submit">Submit</button>
+      </form>
+   </div>
+</body>
+</html>

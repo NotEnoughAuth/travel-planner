@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itinerary for {{ location }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #242424; /* Dark background color */
+            color: #f4f4f4; /* Light text color */
+        }
+        .gif-header {
+            background: url('/static/travel-planner.gif') no-repeat center center;
+            background-size: contain;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .location-header {
+            text-align: center;
+            color: #f4f4f4; /* Light text color */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin: 20px 0;
+        }
+        .location-header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #333; /* Darker container background */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        h1 {
+            color: #f4f4f4; /* Light text color */
+        }
+        h2 {
+            border-bottom: 2px solid #444; /* Darker border color */
+            padding-bottom: 5px;
+            color: #f4f4f4; /* Light text color */
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px 0;
+            border-bottom: 1px solid #444; /* Darker border color */
+        }
+        p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="gif-header"></div>
+    <div class="location-header">
+        <h1>Itinerary for {{ location }}</h1>
+    </div>
+    <div class="container">
+        <h2>Weather</h2>
+        <p>{{ weather }}</p> <!-- Display weather info -->
+
+        <h2>Top Attractions</h2>
+        {% if attractions %}
+            <ul>
+                {% for attraction in attractions %}
+                    <li>{{ attraction }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No attractions found for this location.</p>
+        {% endif %}
+
+        <h2>Top Restaurants</h2>
+        {% if restaurants %}
+            <ul>
+                {% for restaurant in restaurants %}
+                    <li>{{ restaurant }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No restaurants found for this location.</p>
+        {% endif %}
+
+        <h2>Hotels</h2>
+        {% if hotels %}
+            <ul>
+                {% for hotel in hotels %}
+                    <li>{{ hotel }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hotels found for this location.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
