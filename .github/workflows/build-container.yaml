@@ -1,0 +1,98 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main # Trigger the action on push to the 'main' branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    # Check out the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Set up Docker
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    # Log in to GitHub Container Registry (GHCR)
+    - name: Log in to GHCR
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }} # GitHub automatically provides this secret for authentication
+
+    # Downcase the repository name
+    - name: downcase REPO
+      run: |
+        echo "REPO=${GITHUB_REPOSITORY@L}" >>${GITHUB_ENV}
+  
+    # Build the Docker image
+    - name: Build Docker image
+      run: |
+        docker build -t ghcr.io/${REPO}:latest .
+
+    # Push the Docker image to GHCR
+    - name: Push Docker image to GHCR
+      run: |
+        docker push ghcr.io/${REPO}:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      # Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      # Set up AWS credentials for CloudFormation deployment
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Add the session token here
+          aws-region: us-east-1 # Change to your AWS region
+
+      # Update CloudFormation stack
+      - name: Update CloudFormation Stack
+        run: |
+          STACK_NAME=travel-planner-stack
+          # Create or update the CloudFormation stack to deploy ECS resources
+          aws cloudformation deploy \
+            --template-file cloudformation-template.yml \
+            --stack-name $STACK_NAME \
+            --capabilities CAPABILITY_NAMED_IAM
+
+      - name: Make the .ssh directory
+        run: |
+          mkdir -p ~/.ssh
+
+      - name: Copy ssh key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/GitHubKeyPair.pem
+          chmod 700 ~/.ssh/GitHubKeyPair.pem
+          ls -al ~/.ssh
+
+      # Downcase the repository name
+      - name: downcase REPO
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY@L}" >>${GITHUB_ENV}
+      
+      - name: Wait for EC2 instance to be ready
+        run: |
+          # Wait for the EC2 instance to be ready
+          aws ec2 wait instance-status-ok --instance-ids $(aws ec2 describe-instances --query 'Reservations[*].Instances[*].InstanceId' --output text)
+
+      - name: run container
+        run: |
+          # ssh into the EC2 instance and do a docker run for the new image and query the cli for the ip of the ec2 instance that has been created
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/GitHubKeyPair.pem ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text) "sudo docker run -d -p 80:80 ghcr.io/${REPO}:latest --pull=always"
+          # output the public ip of the ec2 instance
+          echo "The public IP of the EC2 instance is $(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)"
