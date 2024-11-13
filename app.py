@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 import json
-import weatherApi
-import attractions
-import restaurant
-import hotels
+import modules.weatherApi as weatherApi
+import modules.attractions as attractions
+import modules.restaurant as restaurant
+import modules.hotels as hotels
 
 app = Flask(__name__)
 
@@ -43,7 +43,7 @@ def itinerary():
 
     # Call external modules to get data
     weather_list = weatherApi.get_weather(location)  # Fetch weather for the location
-    attractions_list = attractions.get_nearby_places(lat_lon, 1500, 'park')  # Fetch attractions for the location
+    attractions_list = attractions.main(lat_lon)  # Fetch attractions for the location
     restaurants_list = restaurant.get_restaurants(location)  # Fetch restaurants for the location
     hotel_list = hotels.Hotel_Api(lat, lon, check_in, check_out, guests)  # Fetch hotels for the location
 
@@ -54,17 +54,15 @@ def itinerary():
         weather_info = "No weather found"
     
     try:
-        attractions_info = []
-        for attraction in attractions_list:
-            attractions_info.append(attraction.get('name') + ' | ' + attraction.get('vicinity') + '\n' + str(attraction.get('opening_hours').get('open_now'))
-            + '\n' + str(attraction.get('rating', 'N/A')))
+        attractions_info = attractions_list
     except:
         attractions_info = ['No attractions found']
 
     try:
         restaurants_info = []
         for i in range(len(restaurants_list[0])):
-            info = f"{restaurants_list[0][i]} | {restaurants_list[1][i]} | Rating: {restaurants_list[2][i]} | Number: {restaurants_list[3][i]}"
+            number = restaurants_list[3][i] if restaurants_list[3][i] else "No number available"
+            info = f"{restaurants_list[0][i]} | {restaurants_list[1][i]} | Rating: {restaurants_list[2][i]} | Number: {number}"
             restaurants_info.append(info)
     except:
         restaurants_info = ['No restaurants found']
@@ -72,7 +70,7 @@ def itinerary():
     try:
         hotel_info = []
         for hotel in hotel_list:
-            info = f"{hotel.get('title')} | {hotel.get('secondary_info')} | Rating: {hotel.get('bubble_rating')}"
+            info = f"{hotel.get('title')} | {hotel.get('secondaryInfo')} | Rating: {hotel.get('bubbleRating')['rating']}"
             hotel_info.append(info)
     except:
         hotel_info = ['No hotels found']
@@ -82,10 +80,3 @@ def itinerary():
 
 if __name__ == '__main__':
     app.run(debug=True, port=80)
-
-
-
-# TODO:
-# * Make sure I am not missing anything and that all the code is updated to latest versions of modules
-# * Clean up file structure and remove unnecessary files
-# * Clean up code to look pretty

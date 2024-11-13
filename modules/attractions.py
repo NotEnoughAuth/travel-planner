@@ -46,15 +46,17 @@ def get_place_details(place_id):
 
 
 
-def main():
+def main(location):
     # Example coordinates: Latitude and Longitude (Central Park, NYC)
-    location = '44.8113,-91.4985'
+    #location = '44.8113,-91.4985'
     radius = 1500  # 1500 meters
     place_type = 'tourist_attraction'  # Type of place to search for
 
     # Call the function to get nearby places
     places = get_nearby_places(location, radius, place_type)
     day = get_day_of_week()
+
+    attractions = []
     
     if places:
         for place in places:
@@ -79,7 +81,9 @@ def main():
                 hours = 'No Hours Listed'
 
             price_level = place_details.get('price_level')
-            print(f"{name}\n{street_address} {city}\n{hours}\n")
+            attractions.append(f"{name}\n{street_address} {city}\n{hours}")
+
+        return attractions
     else:
         print("No places found.")
 
