@@ -39,13 +39,42 @@ def itinerary():
     check_out = request.args.get('trip_end')
     guests = 1
 
-    # Call external modules to generate dynamic content
-    weather_info = weatherApi.get_weather(location)  # Fetch weather for the location
+    # Call external modules to get data
+    try:
+        weather_info = weatherApi.get_weather(location)  # Fetch weather for the location
+    except:
+        weather_info = ['No weather found']
     attractions_list = attractions.get_nearby_places(lat_lon, 1500, 'park')  # Fetch attractions for the location
     restaurants_list = restaurant.get_restaurants(location)  # Fetch restaurants for the location
     hotel_list = hotels.Hotel_Api(lat, lon, check_in, check_out, guests)  # Fetch hotels for the location
+
+    # Parse the information from the API response
+    try:
+        attractions_info = []
+        for attraction in attractions_list:
+            attractions_info.append(attraction.get('name') + ' | ' + attraction.get('vicinity') + '\n' + str(attraction.get('opening_hours').get('open_now'))
+            + '\n' + str(attraction.get('rating', 'N/A')))
+    except:
+        attractions_info = ['No attractions found']
+
+    try:
+        restaurants_info = []
+        for i in range(len(restaurants_list[0])):
+            info = f"{restaurants_list[0][i]} | {restaurants_list[1][i]} | Rating: {restaurants_list[2][i]} | Number: {restaurants_list[3][i]}"
+            restaurants_info.append(info)
+    except:
+        restaurants_info = ['No restaurants found']
     
-    return render_template('itinerary.html', location=location, weather=weather_info, attractions=attractions_list, restaurants=restaurants_list, hotels=hotel_list)
+    try:
+        hotel_info = []
+        for hotel in hotel_list:
+            info = f"{hotel.get('title')} | {hotel.get('secondary_info')} | Rating: {hotel.get('bubble_rating')}"
+            hotel_info.append(info)
+    except:
+        hotel_info = ['No hotels found']
+
+    
+    return render_template('itinerary.html', location=location, weather=weather_info, attractions=attractions_info, restaurants=restaurants_info)#, hotels=hotel_info)
 
 if __name__ == '__main__':
     app.run(debug=True)
