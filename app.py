@@ -29,26 +29,30 @@ def itinerary():
         data = json.load(f)
         api = data['openweatherAPI_key']
         
+    # Convert location to lat and lon
     loc_convert = f"http://api.openweathermap.org/geo/1.0/direct?q={location}&limit=5&appid={api}"
     response = requests.get(loc_convert)
     lat = response.json()[0]['lat']
     lon = response.json()[0]['lon']
     lat_lon = f"{lat},{lon}"
 
+    # Get the dates and number of guests
     check_in = request.args.get('trip_start')
     check_out = request.args.get('trip_end')
     guests = 1
 
     # Call external modules to get data
-    try:
-        weather_info = weatherApi.get_weather(location)  # Fetch weather for the location
-    except:
-        weather_info = ['No weather found']
+    weather_list = weatherApi.get_weather(location)  # Fetch weather for the location
     attractions_list = attractions.get_nearby_places(lat_lon, 1500, 'park')  # Fetch attractions for the location
     restaurants_list = restaurant.get_restaurants(location)  # Fetch restaurants for the location
     hotel_list = hotels.Hotel_Api(lat, lon, check_in, check_out, guests)  # Fetch hotels for the location
 
     # Parse the information from the API response
+    try:
+        weather_info = weather_list
+    except:
+        weather_info = "No weather found"
+    
     try:
         attractions_info = []
         for attraction in attractions_list:
@@ -74,15 +78,14 @@ def itinerary():
         hotel_info = ['No hotels found']
 
     
-    return render_template('itinerary.html', location=location, weather=weather_info, attractions=attractions_info, restaurants=restaurants_info)#, hotels=hotel_info)
+    return render_template('itinerary.html', location=location, weather=weather_info, attractions=attractions_info, restaurants=restaurants_info, hotels=hotel_info)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=80)
 
 
 
 # TODO:
 # * Make sure I am not missing anything and that all the code is updated to latest versions of modules
 # * Clean up file structure and remove unnecessary files
-# * CSS formatting for pages
 # * Clean up code to look pretty
