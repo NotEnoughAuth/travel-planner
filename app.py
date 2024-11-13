@@ -47,7 +47,7 @@ def itinerary():
     restaurants_list = restaurant.get_restaurants(location)  # Fetch restaurants for the location
     hotel_list = hotels.Hotel_Api(lat, lon, check_in, check_out, guests)  # Fetch hotels for the location
 
-    # Parse the information from the API response
+    # Parse the information from the API responses
     try:
         weather_info = weather_list
     except:
