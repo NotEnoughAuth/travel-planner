@@ -79,4 +79,4 @@ def itinerary():
     return render_template('itinerary.html', location=location, weather=weather_info, attractions=attractions_info, restaurants=restaurants_info, hotels=hotel_info)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=80)
+    app.run(debug=False, port=80)
