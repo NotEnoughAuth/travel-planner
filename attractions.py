@@ -1,11 +1,18 @@
 import requests
 import json
+import datetime
+
+with open('apikeys.json','r') as file:
+        config = json.load(file)
+        api_key = config['GoogleAPI']
+
+def get_day_of_week():
+    current_day = datetime.datetime.now().weekday()
+    return current_day
 
 def get_nearby_places(location, radius, place_type):
     
-    with open('apikeys.json','r') as file:
-        config = json.load(file)
-        api_key = config['GoogleAPI']
+    
 
     url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
     
@@ -29,22 +36,50 @@ def get_nearby_places(location, radius, place_type):
     else:
         print(f"Error: {response.status_code}")
         return None
+    
+
+# Function to get place details using place_id
+def get_place_details(place_id):
+    details_url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={api_key}"
+    response = requests.get(details_url)
+    return response.json().get("result", {})
+
+
 
 def main():
     # Example coordinates: Latitude and Longitude (Central Park, NYC)
-    location = '40.785091,-73.968285'
+    location = '44.8113,-91.4985'
     radius = 1500  # 1500 meters
-    place_type = 'park'  # Type of place to search for
+    place_type = 'tourist_attraction'  # Type of place to search for
 
     # Call the function to get nearby places
     places = get_nearby_places(location, radius, place_type)
-
+    day = get_day_of_week()
+    
     if places:
-        # Print out the name of each place
         for place in places:
             name = place.get('name')
-            address = place.get('vicinity')
-            print(f"Place: {name}, Address: {address}")
+            place_id = place.get('place_id') 
+        
+            place_details = get_place_details(place_id)
+        
+            opening_hours = place_details.get('opening_hours', {}).get('weekday_text', [])
+
+            formatted_address = place_details.get('formatted_address', '')
+            address_components = place_details.get('address_components', [])
+        
+            if formatted_address:
+                address_lines = formatted_address.split(',')
+                street_address = address_lines[0].strip()  
+                city = address_lines[1].strip() if len(address_lines) > 1 else ""
+            
+            if opening_hours:
+                hours = opening_hours[day]
+            else:
+                hours = 'No Hours Listed'
+
+            price_level = place_details.get('price_level')
+            print(f"{name}\n{street_address} {city}\n{hours}\n")
     else:
         print("No places found.")
 
