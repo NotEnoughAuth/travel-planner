@@ -82,7 +82,7 @@ jobs:
 
       - name: Copy apikeys.json
         run: |
-          echo "${{ secrets.API_KEYS }}" > apikeys.json
+          echo "${{ secrets.API_KEYS }}" | base64 --decode > apikeys.json
           ls -al
 
       # Downcase the repository name
