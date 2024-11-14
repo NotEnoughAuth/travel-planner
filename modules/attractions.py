@@ -1,6 +1,7 @@
 import requests
 import json
 import datetime
+import os
 
 with open('/app/apikeys.json','r') as file:
         try:
