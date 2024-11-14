@@ -3,9 +3,13 @@ import json
 
 
 def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
-    with open('apikeys.json') as f:
-        api_data = json.load(f)
-        api_key = api_data['tripAdvisorAPI']
+    with open('/app/apikeys.json') as f:
+        try:
+            api_data = json.load(f)
+            api_key = api_data['tripAdvisorAPI']
+        except:
+            print("could not load " + f.name)
+            exit()
 
     # API base URL for Amadeus Hotel Search
     base_url = "https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotelsByLocation"

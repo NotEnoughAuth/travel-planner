@@ -2,9 +2,13 @@ import requests
 import json
 import datetime
 
-with open('apikeys.json','r') as file:
-        config = json.load(file)
-        api_key = config['GoogleAPI']
+with open('/app/apikeys.json','r') as file:
+        try:
+            config = json.load(file)
+            api_key = config['GoogleAPI']
+        except:
+            print("could not load " + file.name)
+            exit()
 
 def get_day_of_week():
     current_day = datetime.datetime.now().weekday()

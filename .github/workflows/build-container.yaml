@@ -82,7 +82,7 @@ jobs:
 
       - name: Copy apikeys.json
         run: |
-          echo "${{ secrets.API_KEYS }}" > apikeys.json
+          echo "${{ secrets.API_KEYS }}" | base64 --decode > apikeys.json
           ls -al
 
       # Downcase the repository name
@@ -98,8 +98,10 @@ jobs:
       - name: run container
         run: |
           # scp the apikeys secret to the ec2 instance in /app/apikeys.json
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/GitHubKeyPair.pem apikeys.json ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text):/app/apikeys.json
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/GitHubKeyPair.pem apikeys.json ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text):apikeys.json
+          # ssh into instance and remove the existing container
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/GitHubKeyPair.pem ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text) "sudo docker stop travel-planner && sudo docker rm travel-planner || true"
           # ssh into the EC2 instance and do a docker run for the new image and query the cli for the ip of the ec2 instance that has been created
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/GitHubKeyPair.pem ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text) "sudo docker run -d -p 80:80 ghcr.io/${REPO}:latest --pull=always --mount type=bind,source=$(pwd)/apikeys.json,target=/app/apikeys.json"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/GitHubKeyPair.pem ec2-user@$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text) "sudo docker run -d -p 80:80 --pull=always --mount type=bind,source=/home/ec2-user/apikeys.json,target=/app/apikeys.json  --restart=always  --name=travel-planner ghcr.io/${REPO}:latest"
           # output the public ip of the ec2 instance
           echo "The public IP of the EC2 instance is $(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)"
