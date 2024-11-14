@@ -8,7 +8,7 @@ def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
         api_key = api_data['tripAdvisorAPI']
 
     # API base URL for Amadeus Hotel Search
-    base_url = "https://tripadvisor16.p.rapidapi.com//api/v1/hotels/searchHotelsByLocation"
+    base_url = "https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotelsByLocation"
     
  
     

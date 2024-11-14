@@ -1,9 +1,9 @@
 import csv
 import random
-from weatherApi import get_weather
-from attractions import get_nearby_places
-from restaurant import get_restaurants
-from module1 import Hotel_Api
+from modules.weatherApi import get_weather
+from modules.attractions import get_nearby_places
+from modules.restaurant import get_restaurants
+from modules.hotels import Hotel_Api
 
 
 def yesnoinput(prompt):
