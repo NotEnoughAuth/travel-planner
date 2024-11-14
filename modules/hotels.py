@@ -8,7 +8,7 @@ def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
             api_data = json.load(f)
             api_key = api_data['tripAdvisorAPI']
         except:
-            print("could not load " + f)
+            print("could not load " + f.name)
             exit()
 
     # API base URL for Amadeus Hotel Search

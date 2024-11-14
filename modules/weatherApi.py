@@ -10,7 +10,7 @@ def get_weather(city):
             data = json.load(f)
             api = data['openweatherAPI_key']
         except:
-            print("could not load " + f)
+            print("could not load " + f.name)
             exit()
 
     # Send a request to the OpenWeatherMap API
