@@ -1,4 +1,16 @@
+certifi==2024.8.30
+charset-normalizer==3.4.0
+click==7.1.2
+colorama==0.4.6
 Flask==1.1.2
 Flask-Login==0.6.3
-requests==2.32.3
+idna==3.10
+itsdangerous==1.1.0
 Jinja2==2.11.2
+MarkupSafe==1.1.1
+numpy==2.1.2
+pillow==11.0.0
+requests==2.32.3
+stego-lsb==1.6.3
+urllib3==2.2.3
+Werkzeug==1.0.1
