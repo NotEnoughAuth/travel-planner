@@ -14,7 +14,7 @@ def get_restaurants(city):
             api_data = json.load(f)
             api_key = api_data['yelp_api_key']
         except:
-            print("could not load " + f)
+            print("could not load " + f.name)
             exit()
 
     # Send a GET request to the Yelp API

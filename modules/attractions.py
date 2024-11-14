@@ -7,7 +7,7 @@ with open('/app/apikeys.json','r') as file:
             config = json.load(file)
             api_key = config['GoogleAPI']
         except:
-            print("could not load " + file)
+            print("could not load " + file.name)
             exit()
 
 def get_day_of_week():
