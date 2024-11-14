@@ -5,7 +5,7 @@ import json
 # Function to get the current weather based on City
 def get_weather(city):
     # Load the API key
-    with open('../apikeys.json') as f:
+    with open('/app/apikeys.json') as f:
         data = json.load(f)
         api = data['openweatherAPI_key']
 

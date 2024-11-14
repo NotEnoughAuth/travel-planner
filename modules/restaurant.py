@@ -9,7 +9,7 @@ def get_restaurants(city):
     ratings = []
     
     # Load the Yelp API key
-    with open('apikeys.json') as f:
+    with open('/app/apikeys.json') as f:
         api_data = json.load(f)
         api_key = api_data['yelp_api_key']
 
