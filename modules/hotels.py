@@ -3,7 +3,7 @@ import json
 
 
 def Hotel_Api(lat, long, check_in_date, check_out_date, guests):
-    with open('apikeys.json') as f:
+    with open('/app/apikeys.json') as f:
         api_data = json.load(f)
         api_key = api_data['tripAdvisorAPI']
 

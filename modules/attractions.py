@@ -2,7 +2,7 @@ import requests
 import json
 import datetime
 
-with open('apikeys.json','r') as file:
+with open('/app/apikeys.json','r') as file:
         config = json.load(file)
         api_key = config['GoogleAPI']
 
