@@ -1,7 +1,6 @@
 import requests
 import json
 import datetime
-import os
 
 with open('/app/apikeys.json','r') as file:
         try:
@@ -9,8 +8,6 @@ with open('/app/apikeys.json','r') as file:
             api_key = config['GoogleAPI']
         except:
             print("could not load " + file.name)
-            # print the contents of the /app/
-            print(os.listdir('/app/'))
             exit()
 
 def get_day_of_week():
