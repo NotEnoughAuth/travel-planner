@@ -10,8 +10,12 @@ def get_restaurants(city):
     
     # Load the Yelp API key
     with open('/app/apikeys.json') as f:
-        api_data = json.load(f)
-        api_key = api_data['yelp_api_key']
+        try:
+            api_data = json.load(f)
+            api_key = api_data['yelp_api_key']
+        except:
+            print("could not load " + f)
+            exit()
 
     # Send a GET request to the Yelp API
     url = f"https://api.yelp.com/v3/businesses/search?location={city}&term=restaurants&categories=&sort_by=best_match&limit=5"
